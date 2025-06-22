@@ -1,4 +1,5 @@
 const path = require('path');
+const bodyParser = require('body-parser');
 
 const express = require('express');
 
@@ -25,8 +26,16 @@ app.get("/contact-us",(req, res, next) => {
   console.log("Fifth Middleware", req.url, req.method);
   res.status(203).sendFile(path.join(__dirname, 'contactUs.html'));
 });
+
 app.post("/contact-us",(req, res, next) => {
-  console.log("Sixth Middleware", req.url, req.method);
+  console.log("Sixth Middleware", req.url, req.method, req.body);
+  next();
+});
+
+app.use(bodyParser.urlencoded());
+
+app.post("/contact-us",(req, res, next) => {
+  console.log("Sixth Middleware", req.url, req.method, req.body);
   res.status(203).send("<h1>We will contact you shortly..</h1>");
 });
 

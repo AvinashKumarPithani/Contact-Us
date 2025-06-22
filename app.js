@@ -1,43 +1,23 @@
 const path = require('path');
-const bodyParser = require('body-parser');
-
+const rootDir = require('./utils/pathUtil');
 const express = require('express');
+const homeRouter = require('./routes/homeRouter');
+const contactRouter = require('./routes/contactRouter');
 
 const app = express();
 
-app.use((req, res, next) => {
-  console.log("First Middleware", req.url, req.method);
-  next();
-});
-app.use((req, res, next) => {
-  console.log("Second Middleware", req.url, req.method);
-  next();
-});
-app.use((req, res, next) => {
-  console.log("Third Middleware", req.url, req.method);
-  // res.status(203).send("<h1>Hello</h1>");
-  next();
-});
-app.get("/",(req, res, next) => {
-  console.log("Fourth Middleware", req.url, req.method);
-  res.status(203).send("<h1>Hello</h1>");
-});
-app.get("/contact-us",(req, res, next) => {
-  console.log("Fifth Middleware", req.url, req.method);
-  res.status(203).sendFile(path.join(__dirname, 'contactUs.html'));
-});
+app.use(express.urlencoded());
 
-app.post("/contact-us",(req, res, next) => {
-  console.log("Sixth Middleware", req.url, req.method, req.body);
+app.use('/.well-known/', (req, res, next) => {
   next();
 });
 
-app.use(bodyParser.urlencoded());
+app.use(homeRouter);
+app.use(contactRouter);
 
-app.post("/contact-us",(req, res, next) => {
-  console.log("Sixth Middleware", req.url, req.method, req.body);
-  res.status(203).send("<h1>We will contact you shortly..</h1>");
-});
+app.use((req, res, next) => {
+  res.status(404).sendFile(path.join(rootDir, 'views', '404.html'));
+})
 
 const PORT = 3000;
 app.listen(PORT, () => {
